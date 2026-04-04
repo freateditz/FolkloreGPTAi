@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Sparkles, Copy, AlertCircle, Loader2 } from 'lucide-react';
+import { Sparkles, Copy, AlertCircle, Loader2, Download } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 const NEU = {
   bg: '#E0E5EC',
@@ -19,6 +20,7 @@ const NEU = {
 const StoryGenerator = () => {
   const [prompt, setPrompt] = useState('');
   const [story, setStory] = useState('');
+  const [storyTitle, setStoryTitle] = useState('Generated Folktale');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -53,11 +55,48 @@ const StoryGenerator = () => {
         setStory(prev => prev + '\n\n' + newText);
       } else {
         setStory(newText);
+        setStoryTitle(response.data.title || 'Generated Folktale');
       }
     } catch (err) {
       console.error('API Error:', err);
       setError('Could not generate story. Please try again.');
     } finally { setLoading(false); }
+  };
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const maxLineWidth = pageWidth - margin * 2;
+    
+    // Title Formatting (Bold)
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    const titleLines = doc.splitTextToSize(storyTitle, maxLineWidth);
+    doc.text(titleLines, pageWidth / 2, 20, { align: 'center' });
+    
+    // Body Formatting (Normal)
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    
+    // Remove markdown bold tags (**text**) just to clean it up lightly
+    const cleanStory = story.replace(/\*\*(.*?)\*\*/g, '$1');
+    const splitText = doc.splitTextToSize(cleanStory, maxLineWidth);
+    
+    let yPos = 30 + (titleLines.length * 10);
+    
+    // Loop through lines and add pages when we reach the bottom of the page
+    for (let i = 0; i < splitText.length; i++) {
+        if (yPos > pageHeight - margin) {
+            doc.addPage();
+            yPos = margin + 10;
+        }
+        doc.text(splitText[i], margin, yPos);
+        yPos += 7; // Line height
+    }
+    
+    doc.save(`${storyTitle.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30)}.pdf`);
   };
 
   return (
@@ -210,6 +249,26 @@ const StoryGenerator = () => {
                     onMouseUp={e => { e.currentTarget.style.boxShadow = NEU.shadowExtrudedSm; }}
                   >
                     <Copy className="w-4 h-4" /> Copy Story
+                  </button>
+
+                  <button
+                    onClick={handleDownloadPDF}
+                    className="inline-flex items-center gap-2 font-medium transition-all duration-300 cursor-pointer"
+                    style={{
+                      background: NEU.bg,
+                      boxShadow: NEU.shadowExtrudedSm,
+                      borderRadius: '12px',
+                      border: 'none',
+                      padding: '10px 20px',
+                      color: '#059669', // Emerald green
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                    onMouseDown={e => { e.currentTarget.style.boxShadow = NEU.shadowInsetSm; }}
+                    onMouseUp={e => { e.currentTarget.style.boxShadow = NEU.shadowExtrudedSm; }}
+                  >
+                    <Download className="w-4 h-4" /> Download PDF
                   </button>
 
                   <button

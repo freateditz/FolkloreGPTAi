@@ -50,3 +50,18 @@ Kenji squinted. "Tiny villages, like scattered pebbles. Thin ribbons of rice pad
 2026-04-04 23:13:45,927 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
 2026-04-04 23:13:55,703 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
 INFO:     127.0.0.1:57952 - "POST /api/generate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58076 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58133 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58147 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58162 - "OPTIONS /api/generate HTTP/1.1" 200 OK
+2026-04-04 23:45:44,713 - __main__ - INFO - 📖 Generating story for prompt: 'story of lion and her son
+'
+2026-04-04 23:45:44,714 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-04 23:45:53,482 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58162 - "POST /api/generate HTTP/1.1" 200 OK
