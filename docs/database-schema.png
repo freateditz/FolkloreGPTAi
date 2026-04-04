@@ -1,0 +1,24 @@
+{
+  _id: ObjectId,
+  title: String,
+  storyText: String,
+  culture: String,
+  language: String,
+  region: String,
+  audioFiles: [{
+    filename: String,
+    cloudinaryUrl: String,
+    duration: Number
+  }],
+  imageFiles: [{
+    filename: String,
+    cloudinaryUrl: String,
+    width: Number,
+    height: Number
+  }],
+  tags: [String],
+  narrator: String,
+  permissions: Boolean,
+  submittedAt: Date,
+  status: String // 'pending', 'approved'
+}

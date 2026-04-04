@@ -1,0 +1,52 @@
+/Users/vivek/Documents/Code/folkloreGPT-main/backend/venv/lib/python3.9/site-packages/google/auth/__init__.py:54: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/vivek/Documents/Code/folkloreGPT-main/backend/venv/lib/python3.9/site-packages/google/oauth2/__init__.py:40: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/vivek/Documents/Code/folkloreGPT-main/backend/server_v2.py:372: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("shutdown")
+INFO:     Started server process [17660]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+✅ Gemini AI initialized successfully
+✅ MongoDB connected successfully
+✅ Gemini AI initialized successfully
+🤖 AI Server starting on port 8000
+INFO:     127.0.0.1:57186 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57186 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57189 - "OPTIONS /api/generate HTTP/1.1" 200 OK
+2026-04-04 23:04:47,279 - __main__ - INFO - 📖 Generating story for prompt: 'king and his son'
+2026-04-04 23:04:47,280 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-04 23:04:58,490 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:57189 - "POST /api/generate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57826 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57826 - "GET /api/health HTTP/1.1" 200 OK
+2026-04-04 23:08:27,094 - __main__ - INFO - 📖 Generating story for prompt: 'king and his son'
+2026-04-04 23:08:27,094 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-04 23:08:37,028 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:57829 - "POST /api/generate HTTP/1.1" 200 OK
+2026-04-04 23:08:41,195 - __main__ - INFO - 📖 Generating story for prompt: 'king and his son'
+2026-04-04 23:08:41,195 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-04 23:08:49,726 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:57829 - "POST /api/generate HTTP/1.1" 200 OK
+2026-04-04 23:13:45,927 - __main__ - INFO - 📖 Generating story for prompt: 'Continue the following story naturally (do NOT write a title, just add the next paragraphs). Existing story: **The King's Mountain Wisdom**
+
+In a land where jade mountains touched the sky and rivers sang ancient songs, lived a wise King. His son, Prince Kenji, was strong and brave, eager to wear the silken robes of kingship. "Father," he would often say, "my heart longs to guide our people to greatness!"
+
+The King, seeing the fire in his son's eyes, smiled. "Greatness, my son, is a seed planted not on the highest peak, but in the deepest soil." One crisp morning, he led Kenji on a journey, not to the bustling city, but to the foot of Mount Kageyama, the highest peak in their realm.
+
+For days, they climbed. Prince Kenji, with youthful vigor, bounded ahead, always looking upwards. Finally, they reached the windswept summit. "Behold, Father!" cried Kenji, sweeping his arm across the vast panorama. "From here, all our lands lie beneath us! We see everything!"
+
+The King nodded, his eyes crinkling at the corners. "Indeed, my son. We see the great forests, the shimmering river, the distant sea. But tell me, what do you see in the valley below?"
+
+Kenji squinted. "Tiny villages, like scattered pebbles. Thin ribbons of rice paddies. Small figures moving like ants."
+
+"And who are these 'ants' and 'pebbles,' Kenji?" asked the King softly. "They are the beating heart of our kingdom. The farmers who feed us, the weavers who clothe us, the artisans who craft our beauty. From this height, they are small. But down in the valley, their joys and sorrows fill the world. A true king knows not only the grandeur of the mountain but'
+2026-04-04 23:13:45,927 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-04 23:13:55,703 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:57952 - "POST /api/generate HTTP/1.1" 200 OK
