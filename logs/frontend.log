@@ -22,3 +22,91 @@ Note that the development build is not optimized.
 To create a production build, use yarn build.
 
 webpack compiled successfully
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/pages/StoryDetail.jsx
+Syntax error: 'import' and 'export' may only appear at the top level. (398:0) (398:undefined)
+ERROR in ./src/pages/StoryDetail.jsx
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /Users/vivek/Documents/Code/folkloreGPT-main/frontend/src/pages/StoryDetail.jsx: 'import' and 'export' may only appear at the top level. (398:0)
+
+  396 | };
+  397 |
+> 398 | export default StoryDetail;
+      | ^
+    at constructor (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:359:19)
+    at FlowParserMixin.raise (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:3266:19)
+    at FlowParserMixin.parseStatementContent (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12364:18)
+    at FlowParserMixin.parseStatementLike (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12261:17)
+    at FlowParserMixin.parseStatementLike (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5054:24)
+    at FlowParserMixin.parseStatementListItem (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12241:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12814:61)
+    at FlowParserMixin.parseBlockBody (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12807:10)
+    at FlowParserMixin.parseBlock (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12795:10)
+    at FlowParserMixin.parseFunctionBody (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:11638:24)
+    at /Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5028:63
+    at FlowParserMixin.forwardNoArrowParamsConversionAt (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5204:16)
+    at FlowParserMixin.parseFunctionBody (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5028:12)
+    at FlowParserMixin.parseArrowExpression (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:11613:10)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:11226:12)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5727:18)
+    at FlowParserMixin.parseExprAtom (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10867:23)
+    at FlowParserMixin.parseExprAtom (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:6818:20)
+    at FlowParserMixin.parseExprSubscripts (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10619:23)
+    at FlowParserMixin.parseUpdate (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10604:21)
+    at FlowParserMixin.parseMaybeUnary (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10584:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10438:61)
+    at FlowParserMixin.parseExprOps (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10443:23)
+    at FlowParserMixin.parseMaybeConditional (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10420:23)
+    at FlowParserMixin.parseMaybeAssign (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10383:21)
+    at FlowParserMixin.parseMaybeAssign (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5685:18)
+    at /Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10353:39
+    at FlowParserMixin.allowInAnd (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:11955:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10353:17)
+    at FlowParserMixin.parseExprListItem (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:11713:18)
+    at FlowParserMixin.parseCallExpressionArguments (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10788:22)
+    at FlowParserMixin.parseCoverCallAndAsyncArrowHead (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10722:29)
+    at FlowParserMixin.parseSubscript (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10659:19)
+    at FlowParserMixin.parseSubscript (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5786:18)
+    at FlowParserMixin.parseSubscripts (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10632:19)
+    at FlowParserMixin.parseSubscripts (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5752:18)
+    at FlowParserMixin.parseExprSubscripts (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10623:17)
+    at FlowParserMixin.parseUpdate (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10604:21)
+    at FlowParserMixin.parseMaybeUnary (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10584:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10438:61)
+    at FlowParserMixin.parseExprOps (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10443:23)
+    at FlowParserMixin.parseMaybeConditional (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10420:23)
+    at FlowParserMixin.parseMaybeAssign (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10383:21)
+    at FlowParserMixin.parseMaybeAssign (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:5685:18)
+    at FlowParserMixin.parseExpressionBase (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10337:23)
+    at /Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10333:39
+    at FlowParserMixin.allowInAnd (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:11950:16)
+    at FlowParserMixin.parseExpression (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:10333:17)
+    at FlowParserMixin.parseStatementContent (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12394:23)
+    at FlowParserMixin.parseStatementLike (/Users/vivek/Documents/Code/folkloreGPT-main/frontend/node_modules/@babel/parser/lib/index.js:12261:17)
+
+ERROR in [eslint] 
+src/pages/StoryDetail.jsx
+  Line 398:  Parsing error: 'import' and 'export' may only appear at the top level. (398:0)
+
+webpack compiled with 2 errors
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Compiling...
+Compiled successfully!
+webpack compiled successfully

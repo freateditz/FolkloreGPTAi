@@ -67,7 +67,7 @@ const StoryDetail = () => {
   const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration] = useState(480);
+  const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -118,6 +118,63 @@ const StoryDetail = () => {
     }
     return () => clearInterval(interval);
   }, [isPlaying, duration]);
+
+  const audioRef = useRef(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+
+  const handlePlayPause = async () => {
+    if (isPlaying) {
+      if (audioRef.current) audioRef.current.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    if (audioUrl && audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+      return;
+    }
+
+    if (isGeneratingAudio) return;
+    setIsGeneratingAudio(true);
+    toast({ title: "Narrating with AI...", description: "Please wait a moment." });
+
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+      const textToRead = story.storyText || story.description || "The story has no content.";
+      
+      const response = await fetch(`${backendUrl}/api/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textToRead.substring(0, 4800) })
+      });
+
+      if (!response.ok) throw new Error("TTS generation failed");
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play();
+          setIsPlaying(true);
+        }
+      }, 100);
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Voice generation failed", variant: "destructive" });
+    } finally {
+      setIsGeneratingAudio(false);
+    }
+  };
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted, audioUrl]);
 
   if (loading) {
     return (
@@ -209,8 +266,14 @@ const StoryDetail = () => {
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="cursor-pointer" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm, borderRadius: '999px', height: '10px', overflow: 'hidden' }}
-                  onClick={e => { const rect = e.currentTarget.getBoundingClientRect(); const percent = (e.clientX - rect.left) / rect.width; setCurrentTime(Math.floor(percent * duration)); }}>
-                  <div style={{ width: `${(currentTime / duration) * 100}%`, height: '100%', background: NEU.accent, borderRadius: '999px', transition: 'width 0.3s ease' }} />
+                  onClick={e => { 
+                    const rect = e.currentTarget.getBoundingClientRect(); 
+                    const percent = (e.clientX - rect.left) / rect.width; 
+                    const newTime = percent * duration;
+                    setCurrentTime(newTime);
+                    if (audioRef.current) audioRef.current.currentTime = newTime;
+                  }}>
+                  <div style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`, height: '100%', background: NEU.accent, borderRadius: '999px', transition: 'width 0.1s linear' }} />
                 </div>
                 <div className="flex justify-between text-sm mt-2" style={{ color: NEU.textMuted }}>
                   <span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span>
@@ -219,11 +282,28 @@ const StoryDetail = () => {
 
               {/* Controls */}
               <div className="flex items-center justify-center gap-4 mb-4">
-                <NeuButton round small onClick={() => setCurrentTime(Math.max(0, currentTime - 30))}><SkipBack className="w-5 h-5" /></NeuButton>
-                <NeuButton round accent onClick={() => { setIsPlaying(!isPlaying); toast({ title: isPlaying ? "Paused" : "Playing" }); }}>
-                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                <audio 
+                  ref={audioRef} 
+                  src={audioUrl} 
+                  onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
+                  onLoadedMetadata={(e) => setDuration(e.target.duration)}
+                  onEnded={() => {setIsPlaying(false); setCurrentTime(0);}}
+                />
+                <NeuButton round small onClick={() => {
+                  const newTime = Math.max(0, currentTime - 10);
+                  setCurrentTime(newTime);
+                  if (audioRef.current) audioRef.current.currentTime = newTime;
+                }}><SkipBack className="w-5 h-5" /></NeuButton>
+                
+                <NeuButton round accent onClick={handlePlayPause}>
+                  {isGeneratingAudio ? <Loader2 className="w-6 h-6 animate-spin" /> : (isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />)}
                 </NeuButton>
-                <NeuButton round small onClick={() => setCurrentTime(Math.min(duration, currentTime + 30))}><SkipForward className="w-5 h-5" /></NeuButton>
+
+                <NeuButton round small onClick={() => {
+                  const newTime = Math.min(duration, currentTime + 10);
+                  setCurrentTime(newTime);
+                  if (audioRef.current) audioRef.current.currentTime = newTime;
+                }}><SkipForward className="w-5 h-5" /></NeuButton>
               </div>
 
               {/* Volume */}

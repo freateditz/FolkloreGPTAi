@@ -99,7 +99,7 @@ const Stories = () => {
   const [hasMore, setHasMore] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => { fetchStories(); }, []);
+  useEffect(() => { fetchStories(true); }, []);
 
   const fetchStories = async (reset = false) => {
     try {
@@ -201,7 +201,7 @@ const Stories = () => {
               <div style={{ width: `${Math.random() * 60 + 20}%`, height: '100%', background: NEU.accent, borderRadius: '999px' }} />
             </div>
           </div>
-          <Link to={`/story/${story.id}`}>
+          <Link to={`/story/${story._id || story.id}`}>
             <NeuButton accent small>
               <PlayCircle className="w-4 h-4" /> Listen
             </NeuButton>
@@ -329,7 +329,7 @@ const Stories = () => {
         {viewMode === 'stories' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredStories.map(story => <StoryCard key={story.id} story={story} />)}
+              {filteredStories.map(story => <StoryCard key={story._id || story.id || Math.random().toString()} story={story} />)}
             </div>
 
             {filteredStories.length === 0 && (
