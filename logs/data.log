@@ -1,3 +1,26 @@
-[dotenv@17.2.1] injecting env (4) from config.env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
-🚀 Data Server running on http://localhost:5000
+[dotenv@17.2.1] injecting env (4) from config.env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+🚀 Data Server running on http://localhost:5001
 ✅ MongoDB connected
+📝 Received story submission: [Object: null prototype] {
+  title: 'few',
+  culture: 'Maori',
+  language: 'Te Reo Maori',
+  region: 'wvd',
+  category: 'Nature Story',
+  ageGroup: '',
+  difficulty: '',
+  description: 'wvDeiva thrimangalm',
+  storyText: 'Deiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalmDeiva thrimangalm',
+  moral: '',
+  tags: 'Nature',
+  narrator: '',
+  submitterName: 'Deiva thrimangalm',
+  submitterEmail: 'vivek@gmail.com',
+  culturalContext: '',
+  permissions: 'true',
+  attribution: 'true',
+  respectfulUse: 'true',
+  submissionType: 'text'
+}
+📁 Received files: [Object: null prototype] {}
+✅ Story saved successfully with ID: 69d164583e526391d0efc117

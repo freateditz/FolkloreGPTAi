@@ -1,71 +1,25 @@
-============================================================
-FOLKLORE GPT - MANUAL STARTUP & TESTING TUTORIAL
-============================================================
-Follow these instructions if you want to start each service
-manually in its own Terminal window, instead of using the
-start_everything.sh script.
+# FULL STACK STARTUP (Easy Mode)
+To start EVERYTHING (Data Server, AI Server, and Frontend) all at once in the background with live logging, run this single command from your root `folkloreGPT-main` directory:
 
-------------------------------------------------------------
-STEP 0: KILL EXISTING RUNNING SERVERS (Optional but recommended)
-------------------------------------------------------------
-Open a terminal and run these commands to ensure ports are free:
-lsof -ti:5000 | xargs kill -9 2>/dev/null
-lsof -ti:8000 | xargs kill -9 2>/dev/null
-lsof -ti:3000 | xargs kill -9 2>/dev/null
+bash start_everything.sh
 
-------------------------------------------------------------
-STEP 1: START THE DATA SERVER (Database & Storage API)
-------------------------------------------------------------
-Open a NEW Terminal window and run:
-cd /Users/vivek/Documents/Code/folkloreGPT-main/data
+
+---
+# MANUAL STARTUP (If you want to run things in separate terminals)
+
+Terminal 1 (Data Server):
+cd data
 npm install
 node server.js
 
--> Leave this terminal open. It should say "Data Server running on http://localhost:5000" and "✅ MongoDB connected".
-
-------------------------------------------------------------
-STEP 2: START THE AI SERVER (Python Gemini & ElevenLabs API)
-------------------------------------------------------------
-Open a SECOND NEW Terminal window and run:
-cd /Users/vivek/Documents/Code/folkloreGPT-main/backend
+Terminal 2 (AI Server):
+cd backend
+python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python3 server_v2.py
 
--> Leave this terminal open. It should say "Uvicorn running on http://0.0.0.0:8000".
-
-------------------------------------------------------------
-STEP 3: START THE FRONTEND (React UI)
-------------------------------------------------------------
-Open a THIRD NEW Terminal window and run:
-cd /Users/vivek/Documents/Code/folkloreGPT-main/frontend
+Terminal 3 (Frontend):
+cd frontend
 npm install
 npm start
-
--> Leave this terminal open. This will automatically open your browser to http://localhost:3000.
-
-============================================================
-HOW TO CHECK IF EVERYTHING IS WORKING
-============================================================
-Once all three servers are running, open a new Terminal window 
-to run these test commands:
-
-1. TEST DATA SERVER:
------------------------
-Command: curl -s http://localhost:5000/api/health
-Expected Output snippet: {"status":"healthy","mongodb":true}
-
-2. TEST AI SERVER:
------------------------
-Command: curl -s http://localhost:8000/api/health
-Expected Output snippet: {"status":"healthy","services":{"mongodb":true,"gemini":true,"elevenlabs":true}}
-
-3. TEST AI GENERATION (GEMINI):
------------------------
-Command: curl -X POST http://localhost:8000/api/generate -H "Content-Type: application/json" -d '{"prompt": "A test story"}'
-Expected Output: A JSON payload containing a "generated_story" array and "ai_model": "gemini-2.5-flash".
-
-4. TEST THE FRONTEND:
------------------------
-Open your web browser and navigate directly to:
-http://localhost:3000

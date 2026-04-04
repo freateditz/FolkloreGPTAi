@@ -93,10 +93,10 @@ const storySchema = new mongoose.Schema({
   category: { type: String, required: true, index: true },
   ageGroup: String,
   difficulty: String,
-  description: { type: String, required: true, index: 'text' },
+  description: { type: String, required: true },
 
   // Story Content
-  storyText: { type: String, index: 'text' },
+  storyText: { type: String },
   moral: String,
 
   // Audio Files - STORED LOCALLY
@@ -139,10 +139,13 @@ const storySchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true },
   submittedAt: { type: Date, default: Date.now, index: true },
   updatedAt: { type: Date, default: Date.now }
-}, { collection: "Stories" });
+}, { collection: "Folklore" });
 
 // Add text search index
-storySchema.index({ title: 'text', description: 'text', storyText: 'text', tags: 'text' });
+storySchema.index(
+  { title: 'text', description: 'text', storyText: 'text', tags: 'text' },
+  { language_override: 'dummy_language_override_field' }
+);
 
 const Story = mongoose.model("Story", storySchema);
 
@@ -362,7 +365,7 @@ app.get("/api/stories", async (req, res) => {
       if (storyObj.audioFiles && storyObj.audioFiles.length > 0) {
         storyObj.audioFiles = storyObj.audioFiles.map(af => ({
           ...af,
-          url: af.localPath ? `http://localhost:5000${af.localPath}` : null
+          url: af.localPath ? `http://localhost:5001${af.localPath}` : null
         }));
       }
       return storyObj;
@@ -420,7 +423,7 @@ app.get("/api/stories/search", async (req, res) => {
       if (storyObj.audioFiles && storyObj.audioFiles.length > 0) {
         storyObj.audioFiles = storyObj.audioFiles.map(af => ({
           ...af,
-          url: af.localPath ? `http://localhost:5000${af.localPath}` : null
+          url: af.localPath ? `http://localhost:5001${af.localPath}` : null
         }));
       }
       return storyObj;
@@ -465,7 +468,7 @@ app.get("/api/stories/:id", async (req, res) => {
     if (storyObj.audioFiles && storyObj.audioFiles.length > 0) {
       storyObj.audioFiles = storyObj.audioFiles.map(af => ({
         ...af,
-        url: af.localPath ? `http://localhost:5000${af.localPath}` : null
+        url: af.localPath ? `http://localhost:5001${af.localPath}` : null
       }));
     }
 
@@ -565,4 +568,5 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(5000, () => console.log("🚀 Data Server running on http://localhost:5000"));
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`🚀 Data Server running on http://localhost:${PORT}`));

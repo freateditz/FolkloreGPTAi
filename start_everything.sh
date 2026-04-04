@@ -8,8 +8,8 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$ROOT/logs"
 
 # ─── Kill stale processes ────────────────────────────────────────────────────
-echo "🧹 Cleaning up ports 5000, 8000, 3000..."
-lsof -ti:5000 | xargs kill -9 2>/dev/null || true
+echo "🧹 Cleaning up ports 5001, 8000, 3000..."
+lsof -ti:5001 | xargs kill -9 2>/dev/null || true
 lsof -ti:8000 | xargs kill -9 2>/dev/null || true
 lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 sleep 2
@@ -18,9 +18,9 @@ sleep 2
 command -v node    >/dev/null 2>&1 || { echo "❌ Node.js not found. Please install Node 16+."; exit 1; }
 command -v python3 >/dev/null 2>&1 || { echo "❌ Python3 not found. Please install Python 3.8+."; exit 1; }
 
-# ─── 1. Data Server (Node/Express — Port 5000) ───────────────────────────────
+# ─── 1. Data Server (Node/Express — Port 5001) ───────────────────────────────
 echo ""
-echo "📦 [1/3] Starting Data Server (port 5000)..."
+echo "📦 [1/3] Starting Data Server (port 5001)..."
 cd "$ROOT/data"
 if [ ! -d node_modules ]; then
   echo "  Installing npm deps..."
@@ -32,8 +32,8 @@ echo "  Waiting for Data Server to initialise..."
 sleep 5
 
 # Check it's still alive (process running OR port is open)
-if kill -0 $DATA_PID 2>/dev/null || lsof -ti:5000 >/dev/null 2>&1; then
-  echo "✅ Data Server running  →  http://localhost:5000"
+if kill -0 $DATA_PID 2>/dev/null || lsof -ti:5001 >/dev/null 2>&1; then
+  echo "✅ Data Server running  →  http://localhost:5001"
 else
   echo "❌ Data server failed to start."
   echo "--- logs/data.log ---"
@@ -96,9 +96,9 @@ echo "============================================================"
 echo "✅ All services are UP!"
 echo "============================================================"
 echo ""
-echo "  🗄  Data Server  (Express)  →  http://localhost:5000"
-echo "       Health:   http://localhost:5000/api/health"
-echo "       Stories:  http://localhost:5000/api/stories"
+echo "  🗄  Data Server  (Express)  →  http://localhost:5001"
+echo "       Health:   http://localhost:5001/api/health"
+echo "       Stories:  http://localhost:5001/api/stories"
 echo ""
 echo "  🤖  AI Server   (Python)   →  http://localhost:8000"
 echo "       Health:   http://localhost:8000/api/health"
@@ -120,7 +120,7 @@ trap '
   echo ""
   echo "🛑 Stopping all servers (PIDs: $DATA_PID $AI_PID $FRONTEND_PID)..."
   kill $DATA_PID $AI_PID $FRONTEND_PID 2>/dev/null
-  lsof -ti:5000 | xargs kill -9 2>/dev/null || true
+  lsof -ti:5001 | xargs kill -9 2>/dev/null || true
   lsof -ti:8000 | xargs kill -9 2>/dev/null || true
   lsof -ti:3000 | xargs kill -9 2>/dev/null || true
   echo "👋 Goodbye!"

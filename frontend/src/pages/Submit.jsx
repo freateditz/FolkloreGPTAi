@@ -254,7 +254,7 @@ const Submit = () => {
                 <NeuInput label="Region" id="region" required value={formData.region} onChange={e => handleInputChange('region', e.target.value)} placeholder="e.g., Northeast India" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <NeuSelect label="Category" id="category" options={mockCategories.map(c => ({ value: c, label: c }))} value={formData.category} onChange={v => handleInputChange('category', v)} placeholder="Select category" />
+                <NeuSelect label="Category" id="category" required options={mockCategories.map(c => ({ value: c, label: c }))} value={formData.category} onChange={v => handleInputChange('category', v)} placeholder="Select category" />
                 <NeuSelect label="Age Group" id="ageGroup" options={ageGroups.map(a => ({ value: a, label: a }))} value={formData.ageGroup} onChange={v => handleInputChange('ageGroup', v)} placeholder="Select age group" />
                 <NeuSelect label="Difficulty" id="difficulty" options={difficulties.map(d => ({ value: d, label: d }))} value={formData.difficulty} onChange={v => handleInputChange('difficulty', v)} placeholder="Select difficulty" />
               </div>

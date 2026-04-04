@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use environment variable for data server URL, fallback to localhost for development
-const DATA_SERVER_URL = process.env.REACT_APP_DATA_SERVER_URL || 'http://localhost:5000';
+const DATA_SERVER_URL = process.env.REACT_APP_DATA_SERVER_URL || 'http://localhost:5001';
 const API_BASE_URL = `${DATA_SERVER_URL}/api`;
 
 class StoryService {
@@ -57,8 +57,6 @@ class StoryService {
       // Map frontend field names to backend field names
       const fieldMapping = {
         storyTitle: 'title',
-        storyText: 'content',
-        description: 'content',
         community: 'culture',
         location: 'region',
         moralLesson: 'moral',
@@ -189,7 +187,7 @@ class StoryService {
       return {
         success: false,
         status: 0,
-        message: 'Network error - please check if the backend server is running on port 5000',
+        message: 'Network error - please check if the backend server is running on port 5001',
         error: 'Network error'
       };
     } else {
