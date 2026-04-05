@@ -170,6 +170,98 @@ class StoryService {
     }
   }
 
+  // ============================================
+  // CULTURAL STORIES AGGREGATOR METHODS
+  // ============================================
+
+  /**
+   * Seed the database with curated cultural stories
+   */
+  async seedCulturalStories() {
+    try {
+      console.log('🌱 Seeding cultural stories...');
+      const response = await this.api.post('/stories/seed');
+      return {
+        success: response.data.success !== false,
+        ...response.data
+      };
+    } catch (error) {
+      console.error('❌ Error seeding stories:', error);
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get all available cultures with story counts
+   */
+  async getCultures() {
+    try {
+      const response = await this.api.get('/cultures');
+      return {
+        success: response.data.success !== false,
+        cultures: response.data.cultures || [],
+        total: response.data.total || 0
+      };
+    } catch (error) {
+      console.error('❌ Error fetching cultures:', error);
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get stories by specific culture/region
+   */
+  async getStoriesByCulture(culture, params = {}) {
+    try {
+      const response = await this.api.get(`/cultures/${encodeURIComponent(culture)}/stories`, { params });
+      return {
+        success: response.data.success !== false,
+        culture: response.data.culture,
+        stories: response.data.stories || [],
+        pagination: response.data.pagination || {}
+      };
+    } catch (error) {
+      console.error('❌ Error fetching culture stories:', error);
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get featured story collections
+   */
+  async getFeaturedCollections() {
+    try {
+      const response = await this.api.get('/stories/featured/collections');
+      return {
+        success: response.data.success !== false,
+        collections: response.data.collections || []
+      };
+    } catch (error) {
+      console.error('❌ Error fetching collections:', error);
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Search stories by keyword
+   */
+  async searchStories(query, params = {}) {
+    try {
+      const response = await this.api.get('/stories/search', {
+        params: { q: query, ...params }
+      });
+      return {
+        success: response.data.success !== false,
+        stories: response.data.stories || [],
+        query: response.data.query,
+        pagination: response.data.pagination || {}
+      };
+    } catch (error) {
+      console.error('❌ Error searching stories:', error);
+      return this.handleError(error);
+    }
+  }
+
   handleError(error) {
     console.error('Handling error:', error);
 

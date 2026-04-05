@@ -176,6 +176,32 @@ const StoryDetail = () => {
     }
   }, [volume, isMuted, audioUrl]);
 
+  const [relatedStories, setRelatedStories] = useState([]);
+
+  // Fetch related stories from same culture
+  useEffect(() => {
+    const fetchRelated = async () => {
+      if (!story) return;
+      try {
+        const response = await storyService.getStories({
+          culture: story.culture,
+          limit: 3,
+          status: 'approved'
+        });
+        if (response.success && response.stories) {
+          const filtered = response.stories.filter(s =>
+            (s._id || s.id) !== (story._id || story.id)
+          ).slice(0, 3);
+          setRelatedStories(filtered);
+        }
+      } catch (err) {
+        console.error('Error fetching related stories:', err);
+      }
+    };
+
+    fetchRelated();
+  }, [story]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: NEU.bg }}>
@@ -204,11 +230,17 @@ const StoryDetail = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const relatedStories = mockStories.filter(s => s.id !== story.id && (s.culture === story.culture || s.category === story.category)).slice(0, 3);
+  // Parse story text into paragraphs for display
+  const parseStoryText = (text) => {
+    if (!text || typeof text !== 'string') return [];
+    return text.split('\n\n').filter(p => p.trim());
+  };
+
+  const storyParagraphs = parseStoryText(story.storyText || story.transcript || story.description);
 
   const tabs = [
     { key: 'description', label: 'Description' },
-    { key: 'transcript', label: 'Transcript' },
+    { key: 'transcript', label: 'Full Story' },
     { key: 'details', label: 'Details' },
   ];
 
@@ -244,14 +276,14 @@ const StoryDetail = () => {
               <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: NEU.textHeading }}>
                 {story.title}
               </h1>
-              <p className="text-lg mb-4" style={{ color: NEU.textMuted }}>{story.region} • Narrated by {story.narrator}</p>
+              <p className="text-lg mb-4" style={{ color: NEU.textMuted }}>{story.region || 'Unknown'} • Narrated by {story.narrator || 'Traditional'}</p>
 
               <div className="flex items-center gap-6 text-sm" style={{ color: NEU.textMuted }}>
                 {[
-                  { icon: Clock, text: story.duration },
-                  { icon: Users, text: `${story.listeners} listeners` },
-                  { icon: Star, text: story.rating, color: '#F59E0B' },
-                  { icon: Headphones, text: story.difficulty },
+                  { icon: Clock, text: story.duration || 'N/A' },
+                  { icon: Users, text: `${story.listeners || 0} listeners` },
+                  { icon: Star, text: story.rating || '4.5', color: '#F59E0B' },
+                  { icon: Headphones, text: story.difficulty || 'Medium' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-1">
                     <item.icon className="w-4 h-4" style={item.color ? { color: item.color, fill: item.color } : {}} />
@@ -337,30 +369,73 @@ const StoryDetail = () => {
 
               {activeTab === 'description' && (
                 <NeuCard className="p-8" hover={false}>
-                  <p className="text-lg leading-relaxed mb-6" style={{ color: NEU.textMuted }}>{story.description}</p>
-                  <div className="p-4 mb-6" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm, borderRadius: '16px' }}>
-                    <h4 className="font-semibold mb-2" style={{ color: NEU.textHeading }}>Moral of the Story</h4>
-                    <p className="italic" style={{ color: NEU.textMuted }}>"{story.moral}"</p>
+                  <p className="text-lg leading-relaxed mb-6" style={{ color: NEU.text, fontFamily: "'Georgia', serif" }}>
+                    {story.description}
+                  </p>
+
+                  <div className="p-6 mb-6 rounded-2xl" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm }}>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: NEU.accent }}>
+                      <BookOpen className="w-5 h-5" />
+                      Moral of the Story
+                    </h4>
+                    <p className="text-lg italic" style={{ color: NEU.text }}>
+                      "{story.moral || 'Wisdom comes from listening to stories.'}"
+                    </p>
                   </div>
+
                   <div className="flex flex-wrap gap-2">
-                    {story.tags.map((tag, i) => <NeuBadge key={i}>{tag}</NeuBadge>)}
+                    {Array.isArray(story.tags) ? story.tags.map((tag, i) => <NeuBadge key={i}>{tag}</NeuBadge>) : null}
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(163,177,198,0.3)' }}>
+                    <div className="flex items-center gap-3 text-sm" style={{ color: NEU.textMuted }}>
+                      <span>From: <strong style={{ color: NEU.text }}>{story.source || story.culture}</strong> tradition</span>
+                      <span>•</span>
+                      <span>Region: <strong style={{ color: NEU.text }}>{story.region}</strong></span>
+                    </div>
                   </div>
                 </NeuCard>
               )}
 
               {activeTab === 'transcript' && (
                 <NeuCard className="p-8" hover={false}>
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold" style={{ color: NEU.textHeading }}>Story Transcript</h4>
-                    <NeuButton small><Download className="w-4 h-4" /> Download</NeuButton>
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="font-semibold" style={{ color: NEU.textHeading }}>The Story</h4>
+                    <div className="flex gap-2">
+                      <NeuButton
+                        small
+                        onClick={() => {
+                          navigator.clipboard.writeText(story.storyText || story.description);
+                          toast({ title: "Story copied to clipboard" });
+                        }}
+                      >
+                        <Share2 className="w-4 h-4" /> Copy
+                      </NeuButton>
+                    </div>
                   </div>
-                  <div className="p-4 max-h-96 overflow-y-auto" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm, borderRadius: '16px' }}>
-                    <p className="leading-relaxed whitespace-pre-line" style={{ color: NEU.textMuted }}>
-                      {story.transcript}
-                      {"\n\n"}The moon, seeing the suffering of the people below, wept tears of silver light. From these tears was born a beautiful daughter, blessed with the power to call forth the rains.
-                      {"\n\n"}She chose to sacrifice her immortality, dancing in the fields until the clouds gathered and the rains came. Her spirit lives on in every drop of rain that falls.
-                    </p>
+                  <div className="max-h-[600px] overflow-y-auto pr-4" style={{ scrollbarWidth: 'thin' }}>
+                    {Array.isArray(storyParagraphs) && storyParagraphs.map((paragraph, index) => (
+                      <p
+                        key={index}
+                        className="text-lg leading-relaxed mb-6"
+                        style={{ color: NEU.text, fontFamily: "'Georgia', serif", lineHeight: '1.8' }}
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
                   </div>
+
+                  {story.moral && (
+                    <div className="mt-8 p-6 rounded-2xl" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm }}>
+                      <h5 className="font-semibold mb-2 flex items-center gap-2" style={{ color: NEU.accent }}>
+                        <BookOpen className="w-4 h-4" />
+                        Moral of the Story
+                      </h5>
+                      <p className="text-lg italic" style={{ color: NEU.text }}>
+                        "{story.moral}"
+                      </p>
+                    </div>
+                  )}
                 </NeuCard>
               )}
 
@@ -368,22 +443,63 @@ const StoryDetail = () => {
                 <NeuCard className="p-8" hover={false}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold mb-3" style={{ color: NEU.textHeading }}>Story Information</h4>
-                      <div className="space-y-2 text-sm" style={{ color: NEU.textMuted }}>
-                        {[['Duration', story.duration], ['Difficulty', story.difficulty], ['Age Group', story.ageGroup], ['Rating', `${story.rating}/5`]].map(([l, v], i) => (
-                          <div key={i} className="flex justify-between"><span>{l}:</span><span>{v}</span></div>
+                      <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: NEU.textHeading }}>
+                        <BookOpen className="w-5 h-5" style={{ color: NEU.accent }} />
+                        Story Information
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        {[
+                          ['Difficulty', story.difficulty || 'Medium'],
+                          ['Age Group', story.ageGroup || 'All Ages'],
+                          ['Category', story.category],
+                          ['Language', story.language],
+                        ].map(([label, value], i) => (
+                          <div key={i} className="flex justify-between items-center p-2 rounded-lg" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm }}>
+                            <span style={{ color: NEU.textMuted }}>{label}:</span>
+                            <span className="font-medium" style={{ color: NEU.text }}>{value}</span>
+                          </div>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-3" style={{ color: NEU.textHeading }}>Cultural Context</h4>
-                      <div className="space-y-2 text-sm" style={{ color: NEU.textMuted }}>
-                        {[['Culture', story.culture], ['Region', story.region], ['Language', story.language], ['Submitted by', story.submittedBy]].map(([l, v], i) => (
-                          <div key={i} className="flex justify-between"><span>{l}:</span><span>{v}</span></div>
+                      <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: NEU.textHeading }}>
+                        <Globe className="w-5 h-5" style={{ color: NEU.accent }} />
+                        Cultural Context
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        {[
+                          ['Culture', story.culture],
+                          ['Region', story.region],
+                          ['Narrator', story.narrator || 'Traditional'],
+                          ['Source', story.source || 'Oral Tradition'],
+                        ].map(([label, value], i) => (
+                          <div key={i} className="flex justify-between items-center p-2 rounded-lg" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm }}>
+                            <span style={{ color: NEU.textMuted }}>{label}:</span>
+                            <span className="font-medium" style={{ color: NEU.text }}>{value}</span>
+                          </div>
                         ))}
                       </div>
+
+                      {story.sourceUrl && (
+                        <a
+                          href={story.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 block text-center py-2 px-4 rounded-lg transition-all"
+                          style={{ background: NEU.accent, color: '#fff' }}
+                        >
+                          Learn more about this tradition →
+                        </a>
+                      )}
                     </div>
                   </div>
+
+                  {story.culturalContext && (
+                    <div className="mt-6 p-4 rounded-xl" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm }}>
+                      <h5 className="font-semibold mb-2" style={{ color: NEU.textHeading }}>Cultural Background</h5>
+                      <p style={{ color: NEU.textMuted }}>{story.culturalContext}</p>
+                    </div>
+                  )}
                 </NeuCard>
               )}
             </div>
@@ -396,10 +512,10 @@ const StoryDetail = () => {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 flex items-center justify-center font-bold text-white"
                   style={{ background: NEU.accent, borderRadius: '50%', boxShadow: `4px 4px 8px rgba(108,99,255,0.3), -4px -4px 8px rgba(255,255,255,0.6)` }}>
-                  {story.narrator.split(' ').map(n => n[0]).join('')}
+                  {(typeof story.narrator === 'string' ? story.narrator : 'T').split(' ').map(n => n && n[0]).join('').substring(0, 2)}
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold" style={{ color: NEU.textHeading }}>{story.narrator}</h4>
+                  <h4 className="text-lg font-bold" style={{ color: NEU.textHeading }}>{story.narrator || 'Traditional Storyteller'}</h4>
                   <p className="text-sm" style={{ color: NEU.textMuted }}>Traditional Storyteller</p>
                 </div>
               </div>
@@ -407,26 +523,42 @@ const StoryDetail = () => {
 
             {/* Related Stories */}
             <NeuCard className="p-6" hover={false}>
-              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: NEU.textHeading }}>Related Stories</h3>
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: NEU.textHeading }}>
+                <BookOpen className="w-5 h-5" style={{ color: NEU.accent }} />
+                More from {story.culture}
+              </h3>
               <div className="space-y-4">
-                {relatedStories.map(rs => (
-                  <Link key={rs.id} to={`/story/${rs.id}`}>
-                    <div className="flex items-start gap-3 p-3 rounded-xl transition-all duration-300 cursor-pointer"
-                      style={{ background: NEU.bg, boxShadow: NEU.shadowExtrudedSm, borderRadius: '16px', marginBottom: '8px' }}
-                      onMouseEnter={e => { e.currentTarget.style.boxShadow = NEU.shadowHover; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.boxShadow = NEU.shadowExtrudedSm; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                      <div className="w-12 h-12 flex items-center justify-center flex-shrink-0"
-                        style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm, borderRadius: '12px' }}>
-                        <BookOpen className="w-5 h-5" style={{ color: NEU.accent }} />
+                {Array.isArray(relatedStories) && relatedStories.length > 0 ? (
+                  relatedStories.map(rs => (
+                    <Link key={rs._id || rs.id} to={`/story/${rs._id || rs.id}`}>
+                      <div className="flex items-start gap-3 p-3 rounded-xl transition-all duration-300 cursor-pointer"
+                        style={{ background: NEU.bg, boxShadow: NEU.shadowExtrudedSm, borderRadius: '16px', marginBottom: '8px' }}
+                        onMouseEnter={e => { e.currentTarget.style.boxShadow = NEU.shadowHover; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.boxShadow = NEU.shadowExtrudedSm; e.currentTarget.style.transform = 'translateY(0)'; }}
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center flex-shrink-0"
+                          style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm, borderRadius: '12px' }}
+                        >
+                          <BookOpen className="w-5 h-5" style={{ color: NEU.accent }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm line-clamp-1" style={{ color: NEU.textHeading }}>{rs.title}</h4>
+                          <p className="text-xs mt-1" style={{ color: NEU.textMuted }}>{rs.category} • {rs.region}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm line-clamp-1" style={{ color: NEU.textHeading }}>{rs.title}</h4>
-                        <p className="text-xs mt-1" style={{ color: NEU.textMuted }}>{rs.culture} • {rs.duration}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-sm" style={{ color: NEU.textMuted }}>
+                    Explore more stories in the {story.culture} tradition.
+                  </p>
+                )}
               </div>
+              <Link to="/stories">
+                <NeuButton small className="w-full mt-4">
+                  Browse All Stories
+                </NeuButton>
+              </Link>
             </NeuCard>
           </div>
         </div>
