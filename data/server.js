@@ -342,7 +342,7 @@ app.get("/api/stories", async (req, res) => {
       length // requested length filter
     } = req.query;
 
-    const cacheKey = `stories_${search||'none'}_${category||'all'}_${culture||'all'}_${language||'all'}_${length||'all'}`;
+    const cacheKey = `stories_${search || 'none'}_${category || 'all'}_${culture || 'all'}_${language || 'all'}_${length || 'all'}`;
     let allAggregatedStories = storyCache.get(cacheKey);
 
     if (!allAggregatedStories) {
@@ -382,97 +382,97 @@ app.get("/api/stories", async (req, res) => {
       fetchPromises.push((async () => {
         if (!process.env.RAPIDAPI_KEY) return [];
         try {
-           const response = await axios.get(`https://${process.env.RAPIDAPI_HOST || 'project-gutenberg.p.rapidapi.com'}/getBooks`, {
-             params: { search: safeQuery },
-             headers: {
-               'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
-               'X-RapidAPI-Host': process.env.RAPIDAPI_HOST || 'project-gutenberg.p.rapidapi.com'
-             }
-           });
-           const books = Array.isArray(response.data) ? response.data : (response.data.books || []);
-           return books.map(book => ({
-             id: `gutenberg_${book.id || Math.random()}`,
-             title: book.title || 'Unknown',
-             description: 'Classic literature from Project Gutenberg.',
-             image: null,
-             source: 'gutenberg',
-             link: book.url || `https://gutenberg.org/ebooks/${book.id}`,
-             length: 'long',
-             category: 'Literature',
-             tags: ['Gutenberg', 'Classic']
-           })).slice(0, 10);
-        } catch(e) { console.error('Gutenberg API failed', e.message); return []; }
+          const response = await axios.get(`https://${process.env.RAPIDAPI_HOST || 'project-gutenberg.p.rapidapi.com'}/getBooks`, {
+            params: { search: safeQuery },
+            headers: {
+              'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+              'X-RapidAPI-Host': process.env.RAPIDAPI_HOST || 'project-gutenberg.p.rapidapi.com'
+            }
+          });
+          const books = Array.isArray(response.data) ? response.data : (response.data.books || []);
+          return books.map(book => ({
+            id: `gutenberg_${book.id || Math.random()}`,
+            title: book.title || 'Unknown',
+            description: 'Classic literature from Project Gutenberg.',
+            image: null,
+            source: 'gutenberg',
+            link: book.url || `https://gutenberg.org/ebooks/${book.id}`,
+            length: 'long',
+            category: 'Literature',
+            tags: ['Gutenberg', 'Classic']
+          })).slice(0, 10);
+        } catch (e) { console.error('Gutenberg API failed', e.message); return []; }
       })());
 
       // 3. Internet Archive API
       fetchPromises.push((async () => {
         try {
-           const q = encodeURIComponent(`${safeQuery} AND mediatype:texts`);
-           const url = `${process.env.ARCHIVE_BASE_URL || 'https://archive.org/advancedsearch.php'}?q=${q}&output=json&rows=10`;
-           const response = await axios.get(url);
-           const docs = response.data?.response?.docs || [];
-           return docs.map(doc => ({
-             id: `archive_${doc.identifier}`,
-             title: doc.title || 'Internet Archive Match',
-             description: (doc.description && doc.description[0]) ? doc.description[0].substring(0, 300) : 'Internet archive publication',
-             image: null,
-             source: 'archive',
-             link: `https://archive.org/details/${doc.identifier}`,
-             length: 'long',
-             category: 'Archive',
-             tags: doc.subject ? (Array.isArray(doc.subject) ? doc.subject : [doc.subject]) : []
-           }));
-        } catch(e) { console.error('Archive API failed', e.message); return []; }
+          const q = encodeURIComponent(`${safeQuery} AND mediatype:texts`);
+          const url = `${process.env.ARCHIVE_BASE_URL || 'https://archive.org/advancedsearch.php'}?q=${q}&output=json&rows=10`;
+          const response = await axios.get(url);
+          const docs = response.data?.response?.docs || [];
+          return docs.map(doc => ({
+            id: `archive_${doc.identifier}`,
+            title: doc.title || 'Internet Archive Match',
+            description: (doc.description && doc.description[0]) ? doc.description[0].substring(0, 300) : 'Internet archive publication',
+            image: null,
+            source: 'archive',
+            link: `https://archive.org/details/${doc.identifier}`,
+            length: 'long',
+            category: 'Archive',
+            tags: doc.subject ? (Array.isArray(doc.subject) ? doc.subject : [doc.subject]) : []
+          }));
+        } catch (e) { console.error('Archive API failed', e.message); return []; }
       })());
 
       // 4. Wikipedia API
       fetchPromises.push((async () => {
         try {
-           if (!search) return []; // Only fallback to Wikipedia if user explicitly searched for a term
-           const url = `${process.env.WIKIPEDIA_BASE_URL || 'https://en.wikipedia.org/api/rest_v1'}/page/summary/${encodeURIComponent(search)}`;
-           const response = await axios.get(url);
-           if (!response.data || !response.data.title) return [];
-           return [{
-             id: `wiki_${response.data.pageid || (Math.random() * 10000)}`,
-             title: response.data.title,
-             description: response.data.extract || '',
-             image: response.data.thumbnail?.source || null,
-             source: 'wikipedia',
-             link: response.data.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${search}`,
-             length: 'short',
-             category: 'Encyclopedia',
-             tags: ['Wikipedia', 'Fact']
-           }];
-        } catch(e) { console.error('Wikipedia API failed', e.message); return []; }
+          if (!search) return []; // Only fallback to Wikipedia if user explicitly searched for a term
+          const url = `${process.env.WIKIPEDIA_BASE_URL || 'https://en.wikipedia.org/api/rest_v1'}/page/summary/${encodeURIComponent(search)}`;
+          const response = await axios.get(url);
+          if (!response.data || !response.data.title) return [];
+          return [{
+            id: `wiki_${response.data.pageid || (Math.random() * 10000)}`,
+            title: response.data.title,
+            description: response.data.extract || '',
+            image: response.data.thumbnail?.source || null,
+            source: 'wikipedia',
+            link: response.data.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${search}`,
+            length: 'short',
+            category: 'Encyclopedia',
+            tags: ['Wikipedia', 'Fact']
+          }];
+        } catch (e) { console.error('Wikipedia API failed', e.message); return []; }
       })());
 
       const externalResults = await Promise.allSettled(fetchPromises);
       externalResults.forEach(res => {
-         if (res.status === 'fulfilled') {
-             allAggregatedStories = allAggregatedStories.concat(res.value);
-         }
+        if (res.status === 'fulfilled') {
+          allAggregatedStories = allAggregatedStories.concat(res.value);
+        }
       });
 
       // Relevance sorting
       allAggregatedStories.sort((a, b) => {
-         if (search) {
-             const lowerSearch = search.toLowerCase();
-             const aTitle = (a.title||'').toLowerCase();
-             const bTitle = (b.title||'').toLowerCase();
-             if (aTitle === lowerSearch && bTitle !== lowerSearch) return -1;
-             if (bTitle === lowerSearch && aTitle !== lowerSearch) return 1;
-             
-             if (aTitle.includes(lowerSearch) && !bTitle.includes(lowerSearch)) return -1;
-             if (bTitle.includes(lowerSearch) && !aTitle.includes(lowerSearch)) return 1;
-         }
-         if (a.length === 'short' && b.length !== 'short') return -1;
-         if (b.length === 'short' && a.length !== 'short') return 1;
-         
-         return 0; 
+        if (search) {
+          const lowerSearch = search.toLowerCase();
+          const aTitle = (a.title || '').toLowerCase();
+          const bTitle = (b.title || '').toLowerCase();
+          if (aTitle === lowerSearch && bTitle !== lowerSearch) return -1;
+          if (bTitle === lowerSearch && aTitle !== lowerSearch) return 1;
+
+          if (aTitle.includes(lowerSearch) && !bTitle.includes(lowerSearch)) return -1;
+          if (bTitle.includes(lowerSearch) && !aTitle.includes(lowerSearch)) return 1;
+        }
+        if (a.length === 'short' && b.length !== 'short') return -1;
+        if (b.length === 'short' && a.length !== 'short') return 1;
+
+        return 0;
       });
 
       if (length && length !== 'all') {
-          allAggregatedStories = allAggregatedStories.filter(s => s.length === length);
+        allAggregatedStories = allAggregatedStories.filter(s => s.length === length);
       }
 
       storyCache.set(cacheKey, allAggregatedStories);
