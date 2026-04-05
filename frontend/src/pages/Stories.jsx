@@ -94,6 +94,7 @@ const Stories = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
+  const [selectedLength, setSelectedLength] = useState('all');
   const [viewMode, setViewMode] = useState('stories'); // 'stories', 'cultures', 'collections'
 
   const [stories, setStories] = useState([]);
@@ -114,10 +115,13 @@ const Stories = () => {
     loadInitialData();
   }, []);
 
-  // Load stories when filters change
+  // Load stories when filters or search term change (Debounced)
   useEffect(() => {
-    fetchStories(true);
-  }, [selectedCulture, selectedCategory]);
+    const delayDebounceFn = setTimeout(() => {
+      fetchStories(true);
+    }, 300);
+    return () => clearTimeout(delayDebounceFn);
+  }, [selectedCulture, selectedCategory, selectedLanguage, selectedLength, searchTerm]);
 
   const loadInitialData = async () => {
     try {
@@ -178,6 +182,7 @@ const Stories = () => {
 
       if (selectedCategory !== 'all') params.category = selectedCategory;
       if (selectedCulture !== 'all') params.culture = selectedCulture;
+      if (selectedLength !== 'all') params.length = selectedLength;
 
       // Use search endpoint if search term exists
       let response;
@@ -289,9 +294,13 @@ const Stories = () => {
           <MapPin className="w-3 h-3" />
           {story.region} • {story.category}
         </p>
-        <p className="text-sm mb-4 line-clamp-3 leading-relaxed" style={{ color: NEU.textMuted }}>
-          {story.description}
-        </p>
+        {story.description && (
+          <div className="mb-4">
+            <p className="text-sm line-clamp-3 leading-relaxed" style={{ color: NEU.textMuted }}>
+              {story.description}
+            </p>
+          </div>
+        )}
 
         {story.moral && (
           <div className="p-3 mb-4 rounded-xl" style={{ background: NEU.bg, boxShadow: NEU.shadowInsetSm }}>
@@ -305,11 +314,11 @@ const Stories = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
-              <span>{story.difficulty || 'Medium'}</span>
+              <span>{story.length === 'short' ? '2 min' : (story.length === 'long' ? '10+ min' : '5 min')} read</span>
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
-              <span>{story.ageGroup || 'All Ages'}</span>
+              <span>{story.ageGroup || story.category || 'All Ages'}</span>
             </div>
           </div>
         </div>
@@ -320,11 +329,19 @@ const Stories = () => {
           ))}
         </div>
 
-        <Link to={`/story/${story._id || story.id}`} className="block">
-          <NeuButton accent small className="w-full justify-center">
-            <BookOpen className="w-4 h-4" /> Read Story
-          </NeuButton>
-        </Link>
+        {!story.source || story.source === 'database' ? (
+          <Link to={`/story/${story._id || story.id}`} className="block">
+            <NeuButton accent small className="w-full justify-center">
+              <BookOpen className="w-4 h-4" /> Read Story
+            </NeuButton>
+          </Link>
+        ) : (
+          <a href={story.link} target="_blank" rel="noopener noreferrer" className="block">
+            <NeuButton accent small className="w-full justify-center">
+               <Globe className="w-4 h-4" /> Read on {story.source.charAt(0).toUpperCase() + story.source.slice(1)}
+            </NeuButton>
+          </a>
+        )}
       </div>
     </NeuCard>
   );
@@ -375,9 +392,9 @@ const Stories = () => {
             style={{ background: NEU.accent, borderRadius: '16px' }}>
             {collection.icon}
           </div>
-          <div>
-            <h3 className="text-xl font-bold" style={{ color: NEU.textHeading }}>{collection.title}</h3>
-            <p className="text-sm" style={{ color: NEU.textMuted }}>{collection.stories?.length || 0} stories</p>
+          <div className="text-sm">
+            <p className="font-bold" style={{ color: NEU.textHeading }}>{collection.title}</p>
+            <p style={{ color: NEU.textMuted }}>{collection.stories?.length || 0} stories</p>
           </div>
         </div>
         <p className="text-sm mb-4" style={{ color: NEU.textMuted }}>{collection.description}</p>
@@ -479,7 +496,6 @@ const Stories = () => {
                 }}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                onKeyPress={e => e.key === 'Enter' && fetchStories(true)}
               />
             </div>
             <div className="flex gap-3 flex-wrap">
@@ -518,10 +534,13 @@ const Stories = () => {
               ))}
             </select>
 
-            <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={neuSelectStyle}>
-              <option value="recent">Most Recent</option>
-              <option value="popular">Most Popular</option>
-              <option value="rating">Highest Rated</option>
+            <select value={selectedLength} onChange={e => {
+               setSelectedLength(e.target.value); 
+            }} style={neuSelectStyle}>
+              <option value="all">Any Length</option>
+              <option value="short">Short Read (2 min)</option>
+              <option value="medium">Medium Read (5 min)</option>
+              <option value="long">Long Read (10+ min)</option>
             </select>
 
             <NeuButton
@@ -606,6 +625,24 @@ const Stories = () => {
                     </NeuButton>
                   </div>
                 )}
+                
+                {/* Infinite Scroll Observer Target */}
+                <div 
+                  ref={(node) => {
+                    if (loading || !hasMore || !node) return;
+                    const observer = new IntersectionObserver(
+                      entries => {
+                        if (entries[0].isIntersecting) {
+                          fetchStories();
+                        }
+                      },
+                      { threshold: 1.0 }
+                    );
+                    observer.observe(node);
+                    return () => observer.disconnect();
+                  }}
+                  className="h-10 mt-4" 
+                />
               </>
             )}
 
